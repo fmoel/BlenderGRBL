@@ -1,4 +1,4 @@
-# GRBL-Control
+# BlenderGRBL
 An addon for Blender to control CNC machines based on GRBL
 
 ![Picture of Blender with addon enabled](images/Overview.png?raw=true "Blender with Blender-GRBL enabled")
