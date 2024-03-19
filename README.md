@@ -5,6 +5,7 @@ An addon for Blender to control CNC machines based on GRBL
 
 # Installation
 Prerequirements:
+
 Blender 3.4+ with an installed version of BlenderCAM is required. BlenderCAM is currently not ported to 4.0. So there is no way to test this Addon with Blender 4.0.
 
 - Download the zip file with the green "<> Code" button. 
@@ -74,6 +75,7 @@ Values:
 ![Milling panel](images/Milling.png?raw=true "Title")
 
 The first list shows available BlenderCAM operations. Select the one that should be send to the CNC machine. If the button __Send selected Blender file__ is not available, the GCode maybe missing. Go to the BlenderCAM panel and press __Calculate path & export Gcode__
+
 Other buttons __currently not implemented__:
 - Reset: go to the first line of the Gcode file
 - Play: Start/Continue the Gcode file
@@ -90,3 +92,5 @@ Blender-GBRL comes with Gcode console. To activate this change one area to __Pyt
 
 ![Change the languages of the console](images/Languages_Gcode.png?raw=true "Change console language")
 
+# Uninstall
+Find the addon in Perference -> Addon and press remove. However, there are two files left in the system. Both don't hurt. It is _console_gcode.py_ and _globalstorage.py_ in the Blenders user folder _scripts/modules_. This files are required to be installed in a different way and can be removed automatically. If the addon is uninstalled, they will not longer be imported and with a restart of Blender they are not longer active. To completely uninstall the addon, this files must be deleted manually. 
