@@ -86,7 +86,7 @@ Other buttons __currently not implemented__:
 
 Blender-GBRL comes with Gcode console. To activate this change one area to __Python Console__ and switch the langauge as shown in the screenshot. To use the console, Blender-GBRL must be connected to the CNC machine - obviously. Blenders UI limits the reponse time. After 1 second a timeout will be shown. However, if the next line is just empty, it will prompt the rest of the message, if any.
 
-![Open console](images/Open console.png?raw=true "Open console")
+![Open console](images/Open%20console.png?raw=true "Open console")
 
 ![Change the languages of the console](images/Languages_Gcode.png?raw=true "Change console language")
 
