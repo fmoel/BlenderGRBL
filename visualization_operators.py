@@ -27,6 +27,9 @@ class GRBLCONTROL_PT_create_cutter_object(Operator):
     bl_description = "Create a cutter in 3D space"
 
     def invoke(self, context, event):
+        active_object = bpy.context.view_layer.objects.active
+        copy_constraint = None
+
         diameter = 0.003
         length = 0.020
         location = ((storage['current_machine_x'] - storage['work_machine_x']) / 1000,
@@ -35,16 +38,26 @@ class GRBLCONTROL_PT_create_cutter_object(Operator):
         if storage['cam_active_operation'] != -1: # and bpy.data.scenes["Scene"].cam_operations is not None and storage['cam_active_operation'] in bpy.data.scenes["Scene"].cam_operations:
           diameter = bpy.data.scenes["Scene"].cam_operations[storage['cam_active_operation']].cutter_diameter
 
-        if storage["copyMillingEndLoc"] in bpy.data.objects:
-          bpy.data.objects[storage["copyMillingEndLoc"]].location = location
+        if storage["copyMillingEndLoc_name"] != "" and storage["copyMillingEndLoc_name"] in bpy.data.objects:
+          obj = bpy.data.objects[storage["copyMillingEndLoc_name"]]
+          obj.location = location
+          context.view_layer.objects.active = obj
+
+          if "Copy cutter location" not in obj.constraints:
+            bpy.ops.object.constraint_add(type='COPY_LOCATION')
+            copy_constraint = obj.constraints.items()[-1][1]
+            copy_constraint.name = "Copy cutter location"
+          else:
+             copy_constraint = obj.constraints["Copy cutter location"]
+
 
         needs_new_cutter = False
         if 'CAM_cutter' in bpy.data.objects:
           obj = bpy.data.objects['CAM_cutter']
           if obj.data['diameter'] == diameter and obj.data['length'] == length:
-             obj.location = location
+            obj.location = location
           else:
-             needs_new_cutter = True
+            needs_new_cutter = True
         else:
           needs_new_cutter = True
 
@@ -54,7 +67,6 @@ class GRBLCONTROL_PT_create_cutter_object(Operator):
           if stored_mode != 'OBJECT':
             bpy.ops.object.mode_set(mode='OBJECT')
           selected_objects = context.selected_objects.copy()
-          active_object = bpy.context.view_layer.objects.active
           hide_viewport = False
 
           for obj in selected_objects:
@@ -80,6 +92,8 @@ class GRBLCONTROL_PT_create_cutter_object(Operator):
           bpy.ops.object.editmode_toggle()
           obj.data["diameter"] = diameter
           obj.data["length"] = length
+          if copy_constraint is not None:
+             copy_constraint.target = obj
           obj.hide_set(hide_viewport)
           obj.hide_select = True
           obj.select_set(False)
@@ -87,7 +101,7 @@ class GRBLCONTROL_PT_create_cutter_object(Operator):
           #restore former mode
           for obj in selected_objects:
               obj.select_set(True)
-          bpy.context.view_layer.objects.active = active_object
           if stored_mode in ENUM_CORRECTION and stored_mode != 'OBJECT':
               bpy.ops.object.mode_set(mode=ENUM_CORRECTION[stored_mode])
+        bpy.context.view_layer.objects.active = active_object
         return {'FINISHED'}
