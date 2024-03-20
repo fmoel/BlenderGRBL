@@ -132,7 +132,8 @@ storage.keys_to_save += ["connectionPort", "connectionBaudrate", "console_log_le
                         "user_command_name2", "user_command_icon2", "user_command_text2", 
                         "user_command_name3", "user_command_icon3", "user_command_text3", 
                         "user_command_name4", "user_command_icon4", "user_command_text4", 
-                        "copyMillingEndLoc_name"]
+                        "copyMillingEndLoc_name", "working_coords_show", "working_coords_display_as",
+                        "working_coords_size", "working_coords_xray"]
 
 storage_defaults = {
     "milling_progress": 0,
@@ -176,6 +177,16 @@ storage_defaults = {
     "user_command_text4": "",
     "user_command_icon4": "USER",
     "copyMillingEndLoc_name": "",
+    "G54": (0.0, 0.0, 0.0),
+    "G55": (0.0, 0.0, 0.0),
+    "G56": (0.0, 0.0, 0.0),
+    "G57": (0.0, 0.0, 0.0),
+    "G58": (0.0, 0.0, 0.0),
+    "G59": (0.0, 0.0, 0.0),
+    "working_coords_show": True,
+    "working_coords_display_as_idx": 2,
+    "working_coords_size": 0.020,
+    "working_coords_xray": True,
 }
 storage.update(storage_defaults)
 storage.load()
@@ -306,6 +317,18 @@ class SceneProperties(PropertyGroup):
     copyMillingEndLoc: PointerProperty( name="Copy milling end location", type=bpy.types.Object,
                                     description="Copy the milling end location to this object. an be used to animate the complete CNC machine",            
                                     ) # type: ignore
+    working_coords_display_as: EnumProperty(name="Working coords display as", description="How the working coords will be displayed", items=utils.empty_display_as_items,
+                                    get=lambda self: storage["working_coords_display_as_idx"], 
+                                    set=lambda self, val: storage.set("working_coords_display_as_idx", val)) # type: ignore
+    working_coords_show: BoolProperty(name="working coords show", description="Should the working coords be displayed", 
+                                    get=lambda self: storage["working_coords_show"], 
+                                    set=lambda self, val: storage.set("working_coords_show", val)) # type: ignore
+    working_coords_size: FloatProperty(name="Working coords size", description="Which size the working coords will be displayed", 
+                                    get=lambda self: storage["working_coords_size"], 
+                                    set=lambda self, val: storage.set("working_coords_size", val)) # type: ignore
+    working_coords_xray: BoolProperty(name="working coords xray", description="Should the working coords be always visible, also through objects", 
+                                    get=lambda self: storage["working_coords_xray"], 
+                                    set=lambda self, val: storage.set("working_coords_xray", val)) # type: ignore
     
 classes = (
     SceneProperties,
@@ -345,6 +368,7 @@ classes = (
     operators.GRBLCONTROL_PT_drive_to_cursor_coords,
     operators.GRBLCONTROL_PT_drive_to_vertex_coords,
     visualization_operators.GRBLCONTROL_PT_create_cutter_object,
+    visualization_operators.GRBLCONTROL_PT_create_or_update_working_coords_emptys,
 )
 
 msgbus_connectionEstablished = object()
@@ -356,15 +380,10 @@ def load_handler_connectionEstablished(dummy, dummy1):
 @persistent
 def load_handler_create_cutter(dummy, dummy1):
     bpy.ops.grbl.create_cutter_object('INVOKE_DEFAULT')
+    bpy.ops.grbl.create_or_update_working_coords_emptys('INVOKE_DEFAULT')
     grbl_control = bpy.context.window_manager.grbl_control
-    grbl_control.copyMillingEndLoc = bpy.data.objects[storage["copyMillingEndLoc_name"]]
-
-
-def update_cutter_location(dummy, dummy1):
-    if 'CAM_cutter' in bpy.data.objects:
-        bpy.data.objects['CAM_cutter'].location.x = storage['work_machine_x']
-        bpy.data.objects['CAM_cutter'].location.y = storage['work_machine_y']
-        bpy.data.objects['CAM_cutter'].location.z = storage['work_machine_z']
+    if storage["copyMillingEndLoc_name"] != "":
+        grbl_control.copyMillingEndLoc = bpy.data.objects[storage["copyMillingEndLoc_name"]]
 
 def register():
     try:

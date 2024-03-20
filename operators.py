@@ -657,6 +657,10 @@ class GRBLCONTROL_OT_settings(Operator):
     user_command_text4: StringProperty(name="User cmd 4 g code", description="User gcode that can be run via the button 'user command 4'", default="") # type: ignore
     user_command_icon4: StringProperty(name="User cmd 4 Icon", description="User gcode that can be run via the button 'user command 4'", default="USER") # type: ignore
     user_command_icon4: StringProperty(name="User cmd 4 Icon", description="User gcode that can be run via the button 'user command 4'", default="USER") # type: ignore
+    working_coords_display_as: EnumProperty(name="Working coords display as", description="How the working coords will be displayed", items=utils.empty_display_as_items) # type: ignore
+    working_coords_show: BoolProperty(name="working coords show", description="Should the working coords be displayed", default=True) # type: ignore
+    working_coords_xray: BoolProperty(name="working coords show xray", description="Should the working coords be as xray through objects", default=True) # type: ignore
+    working_coords_size: FloatProperty(name="Working coords size", description="Which size the working coords will be displayed", default=20) # type: ignore
 
     @classmethod
     def poll(cls, context):
@@ -665,6 +669,7 @@ class GRBLCONTROL_OT_settings(Operator):
     def draw(self, context):
         layout = self.layout
         layout.use_property_split = True
+
         col = layout.column()
         col.prop(self, "connectionPort", expand=False)
         col.prop(self, "connectionBaudrate")
@@ -694,10 +699,18 @@ class GRBLCONTROL_OT_settings(Operator):
         col.prop(self, "user_command_text4", text="GCode")
         col.prop(self, "user_command_icon4", text="Icon")
 
+        # workaround no pointer allowed in operators, the name will be saved in copyMillingEndLoc_name
         grbl_control = bpy.context.window_manager.grbl_control
         col.separator()
         col = col.column()
         col.prop(grbl_control, "copyMillingEndLoc")
+
+        col.separator()
+        col = col.column()
+        col.prop(self, "working_coords_show")
+        col.prop(self, "working_coords_display_as", text="Display As")
+        col.prop(self, "working_coords_size", text="Size")
+        col.prop(self, "working_coords_xray", text="Xray")
 
     def execute(self, context):
         storage["connectionPort"] = self.connectionPort
@@ -720,7 +733,17 @@ class GRBLCONTROL_OT_settings(Operator):
         grbl_control = bpy.context.window_manager.grbl_control
         grbl_control.connectionPort = self.connectionPort
         grbl_control.stream_algorithm = self.stream_algorithm
-        storage["copyMillingEndLoc_name"] = grbl_control.copyMillingEndLoc.name
+        grbl_control.working_coords_display_as = self.working_coords_display_as
+
+        if grbl_control.copyMillingEndLoc is not None:
+            storage["copyMillingEndLoc_name"] =  grbl_control.copyMillingEndLoc.name
+        else:
+            storage["copyMillingEndLoc_name"] =  ""
+
+        storage["working_coords_show"] = self.working_coords_show
+        storage["working_coords_display_as"] = self.working_coords_display_as
+        storage["working_coords_size"] = self.working_coords_size
+        storage["working_coords_xray"] = self.working_coords_xray
 
         reregister_user_buttons()
         storage.save()
@@ -742,6 +765,11 @@ class GRBLCONTROL_OT_settings(Operator):
         self.user_command_name4 = storage["user_command_name4"]
         self.user_command_text4 = storage["user_command_text4"]
         self.user_command_icon4 = storage["user_command_icon4"]
+        
+        self.working_coords_show = storage["working_coords_show"]
+        self.working_coords_display_as = storage["working_coords_display_as"]
+        self.working_coords_size = storage["working_coords_size"]
+        self.working_coords_xray = storage["working_coords_xray"]
 
         return context.window_manager.invoke_props_dialog(self)
 
@@ -756,3 +784,5 @@ def reregister_user_buttons():
               GRBLCONTROL_PT_execute_user_command_3, GRBLCONTROL_PT_execute_user_command_4]:
     bpy.utils.unregister_class(cls)
     bpy.utils.register_class(cls)
+
+    

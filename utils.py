@@ -45,3 +45,9 @@ def update_cutter_location():
           obj.location = location
         except:
           pass
+
+def empty_display_as_items(dummy, dummy1):
+    try:
+        return [(ot.identifier, ot.name, ot.description, ot.icon, ot.value) for ot in bpy.types.Object.bl_rna.properties['empty_display_type'].enum_items]
+    except:
+        return []
