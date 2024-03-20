@@ -326,6 +326,8 @@ classes = (
     operators.GRBLCONTROL_PT_move_negative_y,
     operators.GRBLCONTROL_PT_move_positive_z,
     operators.GRBLCONTROL_PT_move_negative_z,
+    operators.GRBLCONTROL_PT_feed_hold,
+    operators.GRBLCONTROL_PT_resume_feed,
     operators.GRBLCONTROL_PT_send_console_command,
     operators.GRBLCONTROL_PT_send_work_coordinates,
     operators.GRBLCONTROL_PT_milling_blender_cam,

@@ -246,7 +246,9 @@ class GRBLCONTROL_PT_communication:
         #storage["console_log"].append("> " + toSend)
         print("> " + toSend)
         from_console = True
-        grbl_connection.write((toSend + "\n").encode('utf-8'))
+        if len(toSend) > 1:
+            toSend += "\n"
+        grbl_connection.write((toSend).encode('utf-8'))
 
     def send_file(self, filename, stream_algorithm_arg = "use_buffer"):
         global line_index, stream_algorithm

@@ -101,7 +101,7 @@ class GRBLCONTROL_PT_DirveHome(Operator):
     
 class GRBLCONTROL_PT_Reset(Operator):
     bl_idname = "grbl.reset"
-    bl_label = "Reset"
+    bl_label = "Soft Reset"
     bl_description = "Send command to reset CNC"
 
     @classmethod
@@ -343,7 +343,37 @@ class GRBLCONTROL_PT_move_negative_z(Operator):
         toSend = "$J=G21G91Z-" + str(step_size) + "F" + str(storage["feedrate"])
         comm.write(toSend) 
         return {'FINISHED'}      
+
+class GRBLCONTROL_PT_feed_hold(Operator):
+    bl_idname = "grbl.feed_hold"
+    bl_label = "Stops motion. "
+    bl_description = "In normal mode go in to hold mode. While jogging stop motion and clear the buffer."
+
+    @classmethod
+    def poll(cls, context):
+        global comm
+        return comm.is_open() and is_unlocked()
+
+    def invoke(self, context, event):
+        global comm
+        comm.write("!") 
+        return {'FINISHED'}
     
+class GRBLCONTROL_PT_resume_feed(Operator):
+    bl_idname = "grbl.resume_feed"
+    bl_label = "Resume after stop motion."
+    bl_description = "Resumes hold feed or saftey door/parking state."
+
+    @classmethod
+    def poll(cls, context):
+        global comm
+        return comm.is_open() and is_unlocked()
+
+    def invoke(self, context, event):
+        global comm
+        comm.write("~") 
+        return {'FINISHED'}         
+
 class GRBLCONTROL_PT_send_console_command(Operator):
     bl_idname = "grbl.send_console_command"
     bl_label = "Send console command"

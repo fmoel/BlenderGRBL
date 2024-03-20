@@ -58,7 +58,7 @@ Below is the Working point selection. Selecting the working point send the corre
 Next comming the movement area
 - Four direction arrows: Clicking this buttons will drive the CNC __Step size__ millimeters with a speed __Feed rate__ mm/min in X or Y direction. Pressing __Shift__ reduces the __Step size__ to the tenth of it for a single move.
 - Up/Down arrows: The same as above with Z
-- Stop button: __currently not implemented__ Stops the machine
+- Stop button: Feed hold. Interrupts the current Jogging
 
 Beside the movement area there are si other buttons:
 - Drive to cursor: Using Blenders cursor to set the destination position using the work coordinates.
@@ -76,8 +76,8 @@ Values:
 
 The first list shows available BlenderCAM operations. Select the one that should be send to the CNC machine. If the button __Send selected Blender file__ is not available, the GCode maybe missing. Go to the BlenderCAM panel and press __Calculate path & export Gcode__
 
-Other buttons __currently not implemented__:
-- Reset: go to the first line of the Gcode file
+Other buttons:
+- Reset: __currently not implemented__ go to the first line of the Gcode file
 - Play: Start/Continue the Gcode file
 - Pause: Pause the Gcode file
 
