@@ -132,7 +132,7 @@ storage.keys_to_save += ["connectionPort", "connectionBaudrate", "console_log_le
                         "user_command_name2", "user_command_icon2", "user_command_text2", 
                         "user_command_name3", "user_command_icon3", "user_command_text3", 
                         "user_command_name4", "user_command_icon4", "user_command_text4", 
-                        ]
+                        "copyMillingEndLoc_name"]
 
 storage_defaults = {
     "milling_progress": 0,
@@ -175,6 +175,7 @@ storage_defaults = {
     "user_command_name4": "Empty Slot",
     "user_command_text4": "",
     "user_command_icon4": "USER",
+    "copyMillingEndLoc_name": "",
 }
 storage.update(storage_defaults)
 storage.load()
@@ -302,7 +303,10 @@ class SceneProperties(PropertyGroup):
     user_command_icon4: StringProperty(name="User cmd 4 Icon", description="User gcode that can be run via the button 'user command 4'", 
                                     get=lambda self: storage["user_command_icon4"], 
                                     set=lambda self, val: storage.set("user_command_icon4", val)) # type: ignore
-
+    copyMillingEndLoc: PointerProperty( name="Copy milling end location", type=bpy.types.Object,
+                                    description="Copy the milling end location to this object. an be used to animate the complete CNC machine",            
+                                    ) # type: ignore
+    
 classes = (
     SceneProperties,
 
@@ -352,6 +356,8 @@ def load_handler_connectionEstablished(dummy, dummy1):
 @persistent
 def load_handler_create_cutter(dummy, dummy1):
     bpy.ops.grbl.create_cutter_object('INVOKE_DEFAULT')
+    grbl_control = bpy.context.window_manager.grbl_control
+    grbl_control.copyMillingEndLoc = bpy.data.objects[storage["copyMillingEndLoc_name"]]
 
 
 def update_cutter_location(dummy, dummy1):
@@ -373,7 +379,8 @@ def register():
         bpy.utils.register_class(cls)
 
     bpy.types.WindowManager.grbl_control = PointerProperty(type=SceneProperties)
-    storage.restoreObject(bpy.context.window_manager.grbl_control)
+    grbl_control = bpy.context.window_manager.grbl_control
+    storage.restoreObject(grbl_control)
 
     bpy.msgbus.subscribe_rna(
         key=bpy.context.window_manager.grbl_control.connectionEstablished,

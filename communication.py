@@ -14,7 +14,7 @@
 # Author: Frank Moelendoerp
 
 import serial
-import bpy
+import re
 
 from time import sleep
 from threading import Thread
@@ -62,18 +62,20 @@ def control_buffers():
         if len(line) > 0:
             if line.startswith("<") or line.startswith("$") or line.startswith("["):
                 if from_console:
+                    print("< " + line.replace("\r", "").replace("\n", ""))
                     storage["console_log"].append("< " + line)
                 update_status_and_redraw(line)
             elif from_console:
+                print("< " + line.replace("\r", "").replace("\n", ""))
                 storage["console_log"].append("< " + line)
                 from_console = False
             elif not from_console:
                 print("< " + line.replace("\r", "").replace("\n", ""))
-                for line in lines_to_send:
-                    if line[1] == "sent":
-                        line[1] = line
-                        break
-                if stream_algorithm == "use_buffer":
+                for line_to_send in lines_to_send:
+                    if line_to_send[1] == "sent":
+                        line_to_send[1] = line
+                        break                
+                if stream_algorithm == "use_buffer":                    
                     if len(chars_in_buffer) > 0:
                         del chars_in_buffer[0]
                     else:
@@ -83,13 +85,13 @@ def control_buffers():
         if need_next_status_update:
             if grbl_connection is None or not grbl_connection.is_open:
                 break
-            grbl_connection.write(("?").encode('utf-8'))
+            grbl_connection.write(("?").encode('ascii'))
             #print("> ?")            
             need_next_status_update = False
         if stream_algorithm == "line_by_line":
             if line_index > -1 and len(lines_to_send) > 0:
                 line_status = lines_to_send[line_index][1]
-                if line_status == "ok":
+                if line_status == "ok" or line_status == "error:1": # error:1 will be send on empty lines and comments
                     line_index = line_index + 1
                     if line_index >= len(lines_to_send):
                         storage["milling_progress"] = 100
@@ -100,13 +102,13 @@ def control_buffers():
                         line = lines_to_send[line_index][0]
                         if grbl_connection is None or not grbl_connection.is_open:
                             break
-                        grbl_connection.write((line + "\n").encode('utf-8'))
+                        grbl_connection.write((line + "\n").encode('ascii'))
                         print("> " + line.replace("\r", "").replace("\n", ""))
                         lines_to_send[line_index][1] = "sent"
                 elif line_status == "":
                     if grbl_connection is None or not grbl_connection.is_open:
                         break
-                    grbl_connection.write((line + "\n").encode('utf-8'))
+                    grbl_connection.write((line + "\n").encode('ascii'))
                     print("> " + line.replace("\r", "").replace("\n", ""))
                     lines_to_send[line_index][1] = "sent"
             try:
@@ -121,7 +123,7 @@ def control_buffers():
                 if (sum(chars_in_buffer) + len(line) + 1) < RX_BUFFER_SIZE:
                     if grbl_connection is None or not grbl_connection.is_open:
                         break
-                    grbl_connection.write((line + "\n").encode('utf-8'))
+                    grbl_connection.write((line + "\n").encode('ascii'))
                     print("> " + line.replace("\r", "").replace("\n", ""))
                     chars_in_buffer.append(len(line) + 1)
                     lines_to_send[line_index][1] = "sent"
@@ -198,7 +200,7 @@ class GRBLCONTROL_PT_communication:
         grbl_connection = serial.Serial(port=storage["connectionPort"], baudrate=storage["connectionBaudrate"], timeout=1, write_timeout=1)
         sleep(0.5)
         chars_in_buffer.clear()
-        lines_to_send = []
+        lines_to_send.clear()
         line_index = -1
         storage["is_milling"] = False
         storage["milling_line_count"] = 0
@@ -257,7 +259,10 @@ class GRBLCONTROL_PT_communication:
         lines_to_send.clear()
         with open(file=filename) as file:
             lines = file.readlines()
+            regex = re.compile(r"\([^\)]*\)", re.IGNORECASE)
             for line in lines:
+                line = line.replace("\r", "").replace("\n", "")
+                line = regex.sub("", line)
                 lines_to_send.append([line, "", "todo: time needed"])
         chars_in_buffer.clear()
         storage["milling_line_count"] = len(lines_to_send)

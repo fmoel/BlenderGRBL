@@ -656,6 +656,7 @@ class GRBLCONTROL_OT_settings(Operator):
     user_command_name4: StringProperty(name="User cmd 4 button label", description="User gcode that can be run via the button 'user command 4'", default="Empty slot") # type: ignore
     user_command_text4: StringProperty(name="User cmd 4 g code", description="User gcode that can be run via the button 'user command 4'", default="") # type: ignore
     user_command_icon4: StringProperty(name="User cmd 4 Icon", description="User gcode that can be run via the button 'user command 4'", default="USER") # type: ignore
+    user_command_icon4: StringProperty(name="User cmd 4 Icon", description="User gcode that can be run via the button 'user command 4'", default="USER") # type: ignore
 
     @classmethod
     def poll(cls, context):
@@ -693,6 +694,11 @@ class GRBLCONTROL_OT_settings(Operator):
         col.prop(self, "user_command_text4", text="GCode")
         col.prop(self, "user_command_icon4", text="Icon")
 
+        grbl_control = bpy.context.window_manager.grbl_control
+        col.separator()
+        col = col.column()
+        col.prop(grbl_control, "copyMillingEndLoc")
+
     def execute(self, context):
         storage["connectionPort"] = self.connectionPort
         storage["connectionBaudrate"] = self.connectionBaudrate
@@ -714,6 +720,7 @@ class GRBLCONTROL_OT_settings(Operator):
         grbl_control = bpy.context.window_manager.grbl_control
         grbl_control.connectionPort = self.connectionPort
         grbl_control.stream_algorithm = self.stream_algorithm
+        storage["copyMillingEndLoc_name"] = grbl_control.copyMillingEndLoc.name
 
         reregister_user_buttons()
         storage.save()
