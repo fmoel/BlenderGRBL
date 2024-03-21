@@ -17,7 +17,6 @@ import os
 import bpy
 import globalstorage
 from time import sleep
-from threading import Thread
 
 storage = globalstorage.GlobalStorage.instance()
 language_id = "gcode"
@@ -27,7 +26,6 @@ def add_scrollback(text, text_type):
     for l in text.split("\n"):
         bpy.ops.console.scrollback_append(text=l.replace("\t", "    "),
                                           type=text_type)
-
 
 def execute(context, _is_interactive):
     sc = context.space_data
@@ -99,17 +97,3 @@ def banner(context):
     sc.prompt = PROMPT
 
     return {'FINISHED'}
-
-#def get_serial_reponses():
-#    while True:
-#        if "console_log" in storage:
-#            if len(storage["console_log"]):
-#                try:
-#                    add_scrollback("\n".join(storage["console_log"]), "OUTPUT")
-#                    storage["console_log"].clear()
-#                except:
-#                    pass
-#        sleep(0.1)
-#
-#serial_reponse_thread = Thread(target=get_serial_reponses)
-#serial_reponse_thread.start()

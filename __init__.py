@@ -67,11 +67,10 @@ except:
 # will not be loaded, if all consoles are switched to Gcode. So load it always.
 import console_python 
 
-import globalstorage
-
 from . import (
     ui,
     operators,
+    settings_operator,
     utils,
     visualization_operators,
 )
@@ -361,14 +360,13 @@ classes = (
     operators.GRBLCONTROL_PT_send_work_coordinates,
     operators.GRBLCONTROL_PT_milling_blender_cam,
     operators.GRBLCONTROL_PT_set_spindle_on_off,
-    operators.GRBLCONTROL_OT_settings,
-    operators.GRBLCONTROL_OT_change_user_icon1,
     operators.GRBLCONTROL_PT_execute_user_command_1,
     operators.GRBLCONTROL_PT_execute_user_command_2,
     operators.GRBLCONTROL_PT_execute_user_command_3,
     operators.GRBLCONTROL_PT_execute_user_command_4,
     operators.GRBLCONTROL_PT_drive_to_cursor_coords,
     operators.GRBLCONTROL_PT_drive_to_vertex_coords,
+    settings_operator.GRBLCONTROL_OT_settings,
     visualization_operators.GRBLCONTROL_PT_create_cutter_object,
     visualization_operators.GRBLCONTROL_PT_create_or_update_working_coords_emptys,
 )
@@ -411,5 +409,4 @@ def unregister():
 
     del bpy.types.WindowManager.grbl_control
 
-    bpy.msgbus.clear_by_owner(msgbus_connectionEstablished)
     bpy.app.handlers.load_post.remove(load_handler_create_cutter)

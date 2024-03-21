@@ -86,7 +86,6 @@ class GRBLCONTROL_PT_Control(View3DGRBLPanel, Panel):
         row.operator("grbl.drive_to_cursor_coords", text="", icon="ORIENTATION_CURSOR")
         row.operator("grbl.drive_to_vertex_coords", text="", icon="VERTEXSEL")
         #row.operator("grbl.nothing", text="", icon="TOOL_SETTINGS") # todo: machine settings "$$"
-        #row.operator("grbl.nothing", text="", icon="CONSOLE") # todo: configure python console for console interaction wiht CNC
         row = col.row(align=True)
         row.operator("grbl.move_negative_x", text="", icon="TRIA_LEFT")
         row.operator("grbl.feed_hold", text="", icon="CANCEL")

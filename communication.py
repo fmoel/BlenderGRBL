@@ -256,10 +256,12 @@ class GRBLCONTROL_PT_communication:
             toSend += "$#\n"
         grbl_connection.write((toSend).encode('utf-8'))
 
-    def send_file(self, filename, stream_algorithm_arg = "use_buffer"):
+    def send_file(self, filename):
         global line_index, stream_algorithm
         storage["is_milling"] = True
-        stream_algorithm = stream_algorithm_arg
+        stream_algorithm = storage["stream_algorithm"]
+        if stream_algorithm == "flow_control": 
+            stream_algorithm == "use_buffer"
         lines_to_send.clear()
         with open(file=filename) as file:
             lines = file.readlines()

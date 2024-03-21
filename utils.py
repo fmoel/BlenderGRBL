@@ -13,7 +13,7 @@
 #
 # Author: Frank Moelendoerp
 
-import bpy, os, json
+import bpy
 import serial.tools.list_ports as port_list
 import globalstorage
 
