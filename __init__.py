@@ -133,7 +133,8 @@ storage.keys_to_save += ["connectionPort", "connectionBaudrate", "console_log_le
                         "user_command_name3", "user_command_icon3", "user_command_text3", 
                         "user_command_name4", "user_command_icon4", "user_command_text4", 
                         "copyMillingEndLoc_name", "working_coords_show", "working_coords_display_as",
-                        "working_coords_size", "working_coords_xray"]
+                        "working_coords_size", "working_coords_xray", "G54", "G55", "G56", "G57", 
+                        "G58", "G59"]
 
 storage_defaults = {
     "milling_progress": 0,
@@ -183,6 +184,7 @@ storage_defaults = {
     "G57": (0.0, 0.0, 0.0),
     "G58": (0.0, 0.0, 0.0),
     "G59": (0.0, 0.0, 0.0),
+    "machine_zero": (0.0, 0.0, 0.0),
     "working_coords_show": True,
     "working_coords_display_as_idx": 2,
     "working_coords_size": 0.020,
@@ -371,12 +373,6 @@ classes = (
     visualization_operators.GRBLCONTROL_PT_create_or_update_working_coords_emptys,
 )
 
-msgbus_connectionEstablished = object()
-
-@persistent
-def load_handler_connectionEstablished(dummy, dummy1):
-    utils.force_redraw()
-
 @persistent
 def load_handler_create_cutter(dummy, dummy1):
     bpy.ops.grbl.create_cutter_object('INVOKE_DEFAULT')
@@ -401,12 +397,6 @@ def register():
     grbl_control = bpy.context.window_manager.grbl_control
     storage.restoreObject(grbl_control)
 
-    bpy.msgbus.subscribe_rna(
-        key=bpy.context.window_manager.grbl_control.connectionEstablished,
-        owner=msgbus_connectionEstablished,
-        args=(1, 1),
-        notify=load_handler_connectionEstablished,
-    )
     bpy.app.handlers.load_post.append(load_handler_create_cutter)
 
 def unregister():

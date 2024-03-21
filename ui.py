@@ -16,6 +16,9 @@
 from bpy.types import Panel
 import bpy
 
+import globalstorage
+storage = globalstorage.GlobalStorage.instance()
+
 class View3DGRBLPanel:
     bl_category = "GRBL-Control"
     bl_space_type = 'VIEW_3D'
@@ -90,16 +93,16 @@ class GRBLCONTROL_PT_Control(View3DGRBLPanel, Panel):
         row.operator("grbl.move_positive_x", text="", icon="TRIA_RIGHT")
         row.operator("grbl.nothing", text="", icon="BLANK1")
         row.label()
-        row.operator("grbl.exec_usr_cmd_1", text="", icon="USER")
-        row.operator("grbl.exec_usr_cmd_2", text="", icon="USER")
+        row.operator("grbl.exec_usr_cmd_1", text="", icon=storage["user_command_icon1"])
+        row.operator("grbl.exec_usr_cmd_2", text="", icon=storage["user_command_icon2"])
         row = col.row(align=True)
         row.operator("grbl.nothing", text="", icon="BLANK1")
         row.operator("grbl.move_negative_y", text="", icon="TRIA_DOWN")
         row.operator("grbl.nothing", text="", icon="BLANK1")
         row.operator("grbl.move_negative_z", text="", icon="SORT_ASC")
         row.label()
-        row.operator("grbl.exec_usr_cmd_3", text="", icon="USER")
-        row.operator("grbl.exec_usr_cmd_4", text="", icon="USER")
+        row.operator("grbl.exec_usr_cmd_3", text="", icon=storage["user_command_icon3"])
+        row.operator("grbl.exec_usr_cmd_4", text="", icon=storage["user_command_icon4"])
 
         col = layout.column(align=True)
         row = col.row(align=True)
@@ -152,3 +155,4 @@ class GRBLCONTROL_PT_Milling(View3DGRBLPanel, Panel):
         col.operator("grbl.milling_blender_cam")
         progress_bar = layout.row()
         progress_bar.prop(grbl_control, "milling_progress")
+        row.operator("grbl.create_or_update_working_coords_emptys", text="Update woork coords", icon="USER")

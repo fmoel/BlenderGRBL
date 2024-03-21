@@ -32,9 +32,9 @@ class GRBLCONTROL_PT_create_cutter_object(Operator):
 
         diameter = 0.003
         length = 0.020
-        location = ((storage['current_machine_x'] - storage['work_machine_x']) / 1000,
-                    (storage['current_machine_y'] - storage['work_machine_y']) / 1000,
-                    (storage['current_machine_z'] - storage['work_machine_z']) / 1000)
+        location = ((storage['operation_area_x'] + storage['current_machine_x']) / 1000,
+                    (storage['operation_area_y'] + storage['current_machine_y']) / 1000,
+                    (storage['current_machine_z']) / 1000)
         if storage['cam_active_operation'] != -1: # and bpy.data.scenes["Scene"].cam_operations is not None and storage['cam_active_operation'] in bpy.data.scenes["Scene"].cam_operations:
             diameter = bpy.data.scenes["Scene"].cam_operations[storage['cam_active_operation']].cutter_diameter
 
@@ -54,7 +54,7 @@ class GRBLCONTROL_PT_create_cutter_object(Operator):
         needs_new_cutter = False
         if 'CAM_cutter' in bpy.data.objects:
             obj = bpy.data.objects['CAM_cutter']
-            if obj.data['diameter'] == diameter and obj.data['length'] == length:
+            if 'diameter' in obj.data and obj.data['diameter'] == diameter and 'length' in obj.data and obj.data['length'] == length:
                 obj.location = location
             else:
                 needs_new_cutter = True
@@ -132,14 +132,14 @@ class GRBLCONTROL_PT_create_or_update_working_coords_emptys(Operator):
             selected_objects = context.selected_objects.copy()
 
             for name in working_points:
-                location = (storage["operation_area_x"], storage["operation_area_y"], 0.0) - storage[name] \
-                    if name == "machine_zero" else (storage["operation_area_x"], storage["operation_area_y"], 0.0) - storage[name]
+                location = ((storage["operation_area_x"] + storage[name][0]) / 1000, (storage["operation_area_y"] + storage[name][1]) / 1000, storage[name][2] / 1000)
                 obj = None
                 if name in bpy.data.objects:
                     obj = bpy.data.objects[name]
                 else:
                     bpy.ops.object.empty_add(type=grbl_control.working_coords_display_as, align='WORLD', location=location, radius=storage["working_coords_size"])
                     obj = context.object
+                    obj.name = name
                     obj.show_name = True
                     obj.show_in_front = True
 
@@ -178,8 +178,6 @@ class GRBLCONTROL_PT_create_or_update_working_coords_emptys(Operator):
         else:
             for name in working_points:
                 working_point = bpy.data.objects[name]
-                if name == "machine_zero":
-                    working_point.location = (storage["operation_area_x"], storage["operation_area_y"], 0.0)
-                else:
-                    working_point.location = (storage["operation_area_x"], storage["operation_area_y"], 0.0) - storage[name]
+                location = ((storage["operation_area_x"] + storage[name][0]) / 1000, (storage["operation_area_y"] + storage[name][1]) / 1000, storage[name][2] / 1000)
+                working_point.location = location
         return {'FINISHED'}    

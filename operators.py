@@ -116,6 +116,7 @@ class GRBLCONTROL_PT_Reset(Operator):
         storage["milling_current_line"] = -1
         storage["milling_progress"] = 0
         comm.write("\030")
+        comm.write("$#")
         return {'FINISHED'}    
     
 class GRBLCONTROL_PT_Unlock(Operator):
@@ -131,6 +132,7 @@ class GRBLCONTROL_PT_Unlock(Operator):
     def execute(self, context):
         global comm
         comm.write("$X")
+        comm.write("$#")
         return {'FINISHED'}    
 
 def get_current_work_coord_point():
@@ -163,6 +165,7 @@ class GRBLCONTROL_PT_set_x_zero(Operator):
         global comm
         point = get_current_work_coord_point()
         comm.write("G10 L20 P" + point + "X0")
+        comm.write("$#")
         return {'FINISHED'}    
     
 class GRBLCONTROL_PT_set_y_zero(Operator):
@@ -179,6 +182,7 @@ class GRBLCONTROL_PT_set_y_zero(Operator):
         global comm
         point = get_current_work_coord_point()
         comm.write("G10 L20 P" + point + "Y0")
+        comm.write("$#")
         return {'FINISHED'}    
     
 class GRBLCONTROL_PT_set_z_zero(Operator):
@@ -195,6 +199,7 @@ class GRBLCONTROL_PT_set_z_zero(Operator):
         global comm
         point = get_current_work_coord_point()
         comm.write("G10 L20 P" + point + "Z0")
+        comm.write("$#")
         return {'FINISHED'}        
     
 class GRBLCONTROL_PT_set_xy_zero(Operator):
@@ -211,6 +216,7 @@ class GRBLCONTROL_PT_set_xy_zero(Operator):
         global comm
         point = get_current_work_coord_point()
         comm.write("G10 L20 P" + point + "X0Y0")
+        comm.write("$#")
         return {'FINISHED'}    
     
 class GRBLCONTROL_PT_set_xyz_zero(Operator):
@@ -227,6 +233,7 @@ class GRBLCONTROL_PT_set_xyz_zero(Operator):
         global comm
         point = get_current_work_coord_point()
         comm.write("G10 L20 P" + point + "X0Y0Z0")
+        comm.write("$#")
         return {'FINISHED'}    
     
 class GRBLCONTROL_nothing(Operator):

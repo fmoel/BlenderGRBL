@@ -19,32 +19,23 @@ import globalstorage
 
 storage = globalstorage.GlobalStorage.instance()
 
-def force_redraw():
-  return
-  for screen in bpy.data.screens:
-    for area in screen.areas:
-      if area.ui_type == "VIEW_3D":
-        for region in area.regions:
-          if region.type == "UI":
-            region.tag_redraw()
-
 def port_list_callback(scene, context):
-  items = []
-  ports = list(port_list.comports())
-  for port in ports:
-    items.append((port.name, port.name, ""))
-  return items
+    items = []
+    ports = list(port_list.comports())
+    for port in ports:
+        items.append((port.name, port.name, ""))
+    return items
 
 def update_cutter_location():
     if 'CAM_cutter' in bpy.data.objects:
         try:
-          obj = bpy.data.objects['CAM_cutter']
-          location = ((storage['current_machine_x'] - storage['work_machine_x']) / 1000,
-                      (storage['current_machine_y'] - storage['work_machine_y']) / 1000,
-                      (storage['current_machine_z'] - storage['work_machine_z']) / 1000)
-          obj.location = location
+            obj = bpy.data.objects['CAM_cutter']
+            location = ((storage['operation_area_x'] + storage['current_machine_x']) / 1000,
+                        (storage['operation_area_y'] + storage['current_machine_y']) / 1000,
+                        (storage['current_machine_z']) / 1000)
+            obj.location = location
         except:
-          pass
+            pass
 
 def empty_display_as_items(dummy, dummy1):
     try:

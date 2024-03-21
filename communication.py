@@ -155,7 +155,6 @@ def request_status_update():
                 need_next_status_update = True
             except:
                 pass
-        utils.force_redraw()
         sleep(0.1)
     print("close request_status_update thread")
 
@@ -164,6 +163,10 @@ def update_status_and_redraw(line):
     was_status = False
     storage["last_response"] = storage["last_response"] + ""
 
+    if line.startswith("[G5"): 
+        point = line[1:4]
+        coords = line[5:-1].split(",")        
+        storage[point] = (float(coords[0]), float(coords[1]), float(coords[2]))
     if line.startswith("$130"): 
         storage["operation_area_x"] = float(line.split("=")[1])
     if line.startswith("$131"): 
@@ -188,7 +191,6 @@ def update_status_and_redraw(line):
             if part.startswith("<"):
                 storage["machine_state"] = part[1:]
         utils.update_cutter_location()
-        utils.force_redraw()
     return was_status
 
 control_buffers_thread = None
@@ -212,11 +214,11 @@ class GRBLCONTROL_PT_communication:
         request_status_update_thread.start()
         storage["connectionEstablished"] = True
         grbl_connection.write(b"$$\n")
+        grbl_connection.write(b"$#\n")
 
     def milling_end(self):
         global control_buffers_thread, request_status_update_thread
         storage["is_milling"] = False
-        utils.force_redraw()
 
     def update_status(self, line):
         update_status_and_redraw(line)
@@ -250,6 +252,8 @@ class GRBLCONTROL_PT_communication:
         from_console = True
         if len(toSend) > 1:
             toSend += "\n"
+        if toSend.find("G10") > -1:
+            toSend += "$#\n"
         grbl_connection.write((toSend).encode('utf-8'))
 
     def send_file(self, filename, stream_algorithm_arg = "use_buffer"):
