@@ -13,7 +13,6 @@
 #
 # Author: Frank Moelendoerp
 
-import os
 import bpy
 import globalstorage
 from time import sleep
