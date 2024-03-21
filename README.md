@@ -40,6 +40,15 @@ Then there are four blocks for User Commands, which are available in the control
 - GCode: Is the Gcode that will be send. (Currently single line, this means max 70 characters with GRBL 1.1 running on the CNC machine)
 - Icon: Name of the ICON for the button in the control panel. A list can be found here: [Blendicons](https://wilkinson.graphics/blender-icons/) or in the development panel of Blender itself.
 
+Animation
+- Copy milling end location: Will copy the cutter location to another blender objet. Can be used to animate the CNC machine
+
+Work Coordinates
+- working coords show: Make the working coordinates stored in the machine visible
+- Display as: Gives Blender options to show points in 3d space
+- Size: the size of the coordinate object in meters
+- Xray: If switched on, visible through objects
+
 Clicking beside the díalog box or pressing ESC will cancel the transaction and the changes are omitted
 
 ## Control panel

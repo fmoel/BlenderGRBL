@@ -710,10 +710,12 @@ class GRBLCONTROL_OT_settings(Operator):
         grbl_control = bpy.context.window_manager.grbl_control
         col.separator()
         col = col.column()
+        col.label(text="Animation")
         col.prop(grbl_control, "copyMillingEndLoc")
 
         col.separator()
         col = col.column()
+        col.label(text="Work Coordinates")
         col.prop(self, "working_coords_show")
         col.prop(self, "working_coords_display_as", text="Display As")
         col.prop(self, "working_coords_size", text="Size")
