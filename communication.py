@@ -85,7 +85,10 @@ def control_buffers():
         if need_next_status_update:
             if grbl_connection is None or not grbl_connection.is_open:
                 break
-            grbl_connection.write(("?").encode('ascii'))
+            try:
+                grbl_connection.write(("?").encode('ascii'))
+            except:
+                pass
             #print("> ?")            
             need_next_status_update = False
         if stream_algorithm == "line_by_line":
@@ -102,13 +105,19 @@ def control_buffers():
                         line = lines_to_send[line_index][0]
                         if grbl_connection is None or not grbl_connection.is_open:
                             break
-                        grbl_connection.write((line + "\n").encode('ascii'))
+                        try:
+                            grbl_connection.write((line + "\n").encode('ascii'))
+                        except:
+                            pass
                         print("> " + line.replace("\r", "").replace("\n", ""))
                         lines_to_send[line_index][1] = "sent"
                 elif line_status == "":
                     if grbl_connection is None or not grbl_connection.is_open:
                         break
-                    grbl_connection.write((line + "\n").encode('ascii'))
+                    try:
+                        grbl_connection.write((line + "\n").encode('ascii'))
+                    except:
+                        pass
                     print("> " + line.replace("\r", "").replace("\n", ""))
                     lines_to_send[line_index][1] = "sent"
             try:
@@ -123,7 +132,10 @@ def control_buffers():
                 if (sum(chars_in_buffer) + len(line) + 1) < RX_BUFFER_SIZE:
                     if grbl_connection is None or not grbl_connection.is_open:
                         break
-                    grbl_connection.write((line + "\n").encode('ascii'))
+                    try:
+                        grbl_connection.write((line + "\n").encode('ascii'))
+                    except:
+                        pass
                     print("> " + line.replace("\r", "").replace("\n", ""))
                     chars_in_buffer.append(len(line) + 1)
                     lines_to_send[line_index][1] = "sent"
@@ -151,10 +163,7 @@ def request_status_update():
     global need_next_status_update
     while grbl_connection != None:
         if grbl_connection.is_open:
-            try:    
-                need_next_status_update = True
-            except:
-                pass
+            need_next_status_update = True
         sleep(0.1)
     print("close request_status_update thread")
 
